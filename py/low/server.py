@@ -18,6 +18,7 @@ server.bind((HOST, PORT))
 server.listen(1)
 
 conn, addr = server.accept()
+print("connected to ", addr)
 
 while 1:
     data = conn.recv(126).decode()
