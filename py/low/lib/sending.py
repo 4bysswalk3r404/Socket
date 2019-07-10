@@ -19,12 +19,12 @@ def SendString(client, data):
 def SendFile(client, FileName):
     if not os.path.exists(FileName):
         print(FileNotFoundError)
-    FileName = os.path.basename(Filename)
-    client.send(caps.Fill('(&f)').encode())
+    dataVec = Vectorize(open(FileName, 'r').read())
+    FileName = os.path.basename(FileName)
     FileName = caps.Fill(FileName+'(^f)', 64)
+    client.send(caps.Fill('(&f)').encode())
     client.send(FileName.encode())
 
-    dataVec = Vectorize(open(FileName, 'r').read())
     for data in dataVec:
         client.send(data)
     client.send(caps.Fill('(*f)').encode())
