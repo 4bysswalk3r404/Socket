@@ -14,3 +14,9 @@ def lastis(string, sub):
 
 def Fill(string, bufsize=32):
     return string + (' ' * (bufsize - sys.getsizeof(string)))
+
+def Snip(string, cap):
+    if cap in string:
+        return string[:len(string)-len(cap)].strip()
+    else:
+        return string.strip()

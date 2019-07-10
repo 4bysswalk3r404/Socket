@@ -9,24 +9,27 @@ import caps
 import os
 
 def RecieveString(conn):
-    data = conn.recv(128).decode()
-    print(data, end="")
+    data = conn.recv(64).decode()
+    print('(string)' + caps.Snip(data, '(*s)'), end="")
     while not '(*s)' in data:
-        data = con.recv(128).decode()
-        print('(string)' + data, end="")
+        data = conn.recv(64).decode()
+        print(caps.Snip(data, '(*s)'), end="")
         if '(*s)' in data:
-            print('\n')
+            print('|\n')
             return
+    print('-\n')
 
 def RecieveFile(conn):
-    FileName = conn.recv(64).decode().replace(' ', '')
-    data = ""
+    data = conn.recv(64).decode().split('(^f)')
+    FileName = data[0]
+    print("(file)", FileName)
     with open(FileName, 'w') as NewFile:
+        NewFile.write(caps.Snip(data[1], '(*f)'))
         while not '(*f)' in data:
             data = conn.recv(128).decode()
+            print(caps.Snip(data, '(*f)'), file=NewFile)
             if '(*f)' in data:
                 return
-            print(data, end="", file=NewFile)
 
 #def RecieveFolder():
 #    data = conn.recv(12)

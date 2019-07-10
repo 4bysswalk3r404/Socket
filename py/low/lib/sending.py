@@ -11,13 +11,14 @@ import os
 def SendString(client, data):
     client.send(caps.Fill('(&s)').encode())
     dataVec = Vectorize(data)
+    print(dataVec)
     for data in dataVec:
         client.send(data)
     client.send(caps.Fill('(*s)').encode())
 
 def SendFile(client, FileName):
     client.send(caps.Fill('(&f)').encode())
-    FileName += caps.Fill(FileName, 64)
+    FileName = caps.Fill(FileName, 64)
     client.send(FileName.encode())
 
     dataVec = Vectorize(open(FileName, 'r').read())

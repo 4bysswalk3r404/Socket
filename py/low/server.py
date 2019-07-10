@@ -22,10 +22,8 @@ print("connected to ", addr)
 while 1:
     data = conn.recv(32).decode()
     if '(&s)' in data:
-        print('string')
         RecieveString(conn)
     elif '(&f)' in data:
-        print('file')
         RecieveFile(conn)
     if '(!!)' in data:
         break
