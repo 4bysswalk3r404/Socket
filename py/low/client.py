@@ -15,27 +15,6 @@ PORT = 3702
 
 client.connect((HOST, PORT))
 
-def SendString(data):
-    dataVec = Vectorize(data)
-    for data in dataVec:
-        client.send(data)
-
-def SendFile(File):
-    client.send('<file>'.encode())
-    fn, ex = os.path.splitext(File)
-    client.send(fn.encode())
-    client.send(ex.encode())
-
-    dataVec = Vectorize(open(File, 'r').read())
-    for data in dataVec:
-        client.send(data)
-    client.send('</file>')
-
-def SendFolder(Folder):
-    client.send('<folder>')
-    #not implemented
-    client.send('</folder>')
-
 protocol = 'string'
 while 1:
     data = input('(%s)' % protocol)
@@ -45,12 +24,8 @@ while 1:
             protocol = 'string'
         elif command[1] == 'file':
             protocol = 'file'
-        elif command[1] == 'folder':
-            protocol = 'folder'
     else:
         if protocol == 'string':
-            SendString(data)
+            SendString(client, data)
         elif protocol == 'file':
-            SendFile(data)
-        elif protocol == 'folder':
-            SendFolder(data)
+            SendFile(client, data)
