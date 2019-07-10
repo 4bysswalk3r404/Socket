@@ -21,9 +21,11 @@ print("connected to ", addr)
 
 while 1:
     data = conn.recv(32).decode()
-    if data == caps.Fill('(&s)'):
+    if '(&s)' in data:
+        print('string')
         RecieveString(conn)
-    elif data == caps.Fill('(&f)'):
+    elif '(&f)' in data:
+        print('file')
         RecieveFile(conn)
-    if data == caps.Fill('(!!)'):
+    if '(!!)' in data:
         break

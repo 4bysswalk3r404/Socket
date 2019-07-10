@@ -20,7 +20,7 @@ def SendFile(client, FileName):
     FileName += caps.Fill(FileName, 64)
     client.send(FileName.encode())
 
-    dataVec = Vectorize(open(File, 'r').read())
+    dataVec = Vectorize(open(FileName, 'r').read())
     for data in dataVec:
         client.send(data)
     client.send(caps.Fill('(*f)').encode())

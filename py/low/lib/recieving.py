@@ -13,7 +13,7 @@ def RecieveString(conn):
     print(data, end="")
     while not '(*s)' in data:
         data = con.recv(128).decode()
-        print(data, end="")
+        print('(string)' + data, end="")
         if '(*s)' in data:
             print('\n')
             return
@@ -24,9 +24,9 @@ def RecieveFile(conn):
     with open(FileName, 'w') as NewFile:
         while not '(*f)' in data:
             data = conn.recv(128).decode()
-            if '(*f)' in data):
+            if '(*f)' in data:
                 return
-            print(data, file=NewFile)
+            print(data, end="", file=NewFile)
 
 #def RecieveFolder():
 #    data = conn.recv(12)
