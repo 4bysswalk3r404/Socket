@@ -4,6 +4,7 @@ if sys.platform == 'linux':
 elif sys.platform == 'win32':
     sys.path.append("..\\..\\lib")
 
+from pathlib import Path
 from BufferSplit import Vectorize
 import caps
 import os
@@ -17,6 +18,9 @@ def SendString(client, data):
     client.send(caps.Fill('(*s)').encode())
 
 def SendFile(client, FileName):
+    path = Path(FileName)
+    if not path.exist():
+        print(FileNotFoundError)
     client.send(caps.Fill('(&f)').encode())
     FileName = caps.Fill(FileName, 64)
     client.send(FileName.encode())
