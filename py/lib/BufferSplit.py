@@ -3,6 +3,7 @@ import sys
 def Vectorize(data, buffer=126):
     dataVec = []
     charArr = []
+    data = data[::-1]
     while data:
         if sys.getsizeof("".join(charArr).encode()) < buffer:
             charArr.append(data[-1])
