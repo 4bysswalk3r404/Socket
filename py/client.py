@@ -3,12 +3,14 @@ sys.path.append('./lib')
 
 import os
 import socket
-import BufferSplit
 import caps
 from sending import *
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-HOST = input("Server ip: ")
+if sys.platform == 'win32':
+    HOST = socket.gethostbyname(socket.gethostname())
+else:
+    HOST = input("Server ip: ")
 PORT = 3702
 client.connect((HOST, PORT))
 
@@ -21,8 +23,16 @@ while 1:
             protocol = 'string'
         elif command[1] == 'file':
             protocol = 'file'
+        elif command[1] == 'folder':
+            protocol = 'folder'
+        elif command[1] == 'close':
+            protocol == 'close'
     else:
         if protocol == 'string':
             SendString(client, data)
         elif protocol == 'file':
             SendFile(client, data)
+        elif protocol == 'folder':
+            SendFolder(client, data)
+        elif protocol == 'close':
+            close()

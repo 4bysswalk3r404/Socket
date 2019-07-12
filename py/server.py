@@ -10,7 +10,10 @@ import caps
 from recieving import *
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-HOST = input("HOST: ")
+if sys.platform == 'win32':
+    HOST = socket.gethostbyname(socket.gethostname())
+else:
+    HOST = input("HOST: ")
 PORT = 3702
 server.bind((HOST, PORT))
 server.listen(1)
@@ -20,8 +23,10 @@ print("connected to ", addr)
 while 1:
     data = conn.recv(4).decode()
     if data == '(&s)':
-        RecieveString(conn)
+        print(RecieveString(conn))
     elif data == '(&f)':
-        RecieveFile(conn)
+        RecieveFile(conn[0])
+    elif data == '(&d)':
+        RecieveFolder(conn)
     if data == '(!!)':
         break
