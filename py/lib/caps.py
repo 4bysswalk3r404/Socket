@@ -13,7 +13,7 @@ def lastis(string, sub):
         return False
 
 def Fill(string, bufsize=32):
-    return string + (' ' * (bufsize - sys.getsizeof(string)))
+    return string + (' ' * (bufsize - len(string)))
 
 def Snip(string, cap):
     if cap in string:

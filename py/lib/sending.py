@@ -3,28 +3,21 @@ from BufferSplit import Vectorize
 import caps
 import os
 
-def SendString(client, data):
-    client.send(caps.Fill('(&s)').encode())
-    dataVec = Vectorize(data)
-    print(dataVec)
-    for data in dataVec:
-        client.send(data)
-    client.send(caps.Fill('(*s)').encode())
+def SendString(client, string):
+    client.send('(&s)'.encode())
+    client.send(caps.Fill(str(len(string)), 5).encode())
+    client.send(string.encode())
 
-def SendFile(client, FileName):
-    if not os.path.exists(FileName):
+def SendFile(client, filepath):
+    if not os.path.exists(filepath):
         print(FileNotFoundError)
-    dataVec = Vectorize(open(FileName, 'r').read())
-    FileName = os.path.basename(FileName)
-    FileName = caps.Fill(FileName+'(^f)', 64)
-    client.send(caps.Fill('(&f)').encode())
-    client.send(FileName.encode())
-    for data in dataVec:
-        client.send(data)
-    client.send(caps.Fill('(*f)').encode())
+        break
+    client.send('(&f)'.encode())
+    client.send(caps.Fill(str(len(filepath)), 3).encode())
 
-#def SendFolder():
-#    pass
-#
-#def SendTree():
-#    pass
+    filename = os.basename(filepath)
+    client.send(filename.encode())
+
+    data = open(filepath, 'r')
+    client.send(caps.Fill(str(len(data)), 5).encode())
+    client.send(data.encode())

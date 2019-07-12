@@ -18,10 +18,10 @@ conn, addr = server.accept()
 print("connected to ", addr)
 
 while 1:
-    data = conn.recv(32).decode()
-    if '(&s)' in data:
+    data = conn.recv(4).decode()
+    if data == '(&s)':
         RecieveString(conn)
-    elif '(&f)' in data:
+    elif data == '(&f)':
         RecieveFile(conn)
-    if '(!!)' in data:
+    if data == '(!!)':
         break
