@@ -5,6 +5,7 @@ import os
 def RecieveString(conn):
     stringbuffer = int(conn.recv(5).strip())
     string = conn.recv(stringbuffer).decode()
+    print('(string)', string)
     return string
 
 def RecieveFile(conn, keep=False):
@@ -16,6 +17,7 @@ def RecieveFile(conn, keep=False):
     contents = conn.recv(contentbuffer).decode()
     with open(filepath, 'w') as f:
         f.write(contents)
+    print('(file)', filepath)
     return [filepath, contents]
 
 def RecieveFolder(conn):
@@ -23,6 +25,7 @@ def RecieveFolder(conn):
     dirname = conn.recv(namebuffer).decode()
     if not os.path.exists(dirname):
         os.makedirs(dirname)
+    print('(folder)', dirname)
     return dirname
 
 def RecieveTree(conn):

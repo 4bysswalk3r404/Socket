@@ -14,7 +14,7 @@ def SendFile(client, filepath):
     client.send('(&f)'.encode())
     client.send(caps.Fill(str(len(filepath)), 3).encode())
     client.send(filepath.encode())
-    data = open(filepath, 'r')
+    data = open(filepath, 'r').read()
     client.send(caps.Fill(str(len(data)), 5).encode())
     client.send(data.encode())
 

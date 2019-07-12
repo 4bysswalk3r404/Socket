@@ -23,7 +23,7 @@ print("connected to ", addr)
 while 1:
     data = conn.recv(4).decode()
     if data == '(&s)':
-        print(RecieveString(conn))
+        RecieveString(conn)
     elif data == '(&f)':
         RecieveFile(conn[0])
     elif data == '(&d)':
