@@ -25,6 +25,8 @@ while 1:
             protocol = 'file'
         elif command[1] == 'folder':
             protocol = 'folder'
+        elif command[1] == 'tree':
+            protocol = 'tree'
         elif command[1] == 'close':
             protocol == 'close'
     else:
@@ -34,5 +36,7 @@ while 1:
             SendFile(client, data)
         elif protocol == 'folder':
             SendFolder(client, data)
+        elif protocol == 'tree':
+            SendTree(client, data)
         elif protocol == 'close':
             close()

@@ -10,13 +10,14 @@ def SendString(client, string):
 def SendFile(client, filepath):
     if not os.path.exists(filepath):
         print(FileNotFoundError)
-        break
+        return
     client.send('(&f)'.encode())
     client.send(caps.Fill(str(len(filepath)), 3).encode())
     client.send(filepath.encode())
-    data = open(filepath, 'r').read()
+    data = open(filepath, 'rb').read()
     client.send(caps.Fill(str(len(data)), 5).encode())
-    client.send(data.encode())
+    client.send(data)
+    print("sent %s with length of %s bytes" % (filepath, len(data)))
 
 def SendFolder(client, dir):
     client.send('(&d)'.encode())

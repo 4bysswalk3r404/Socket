@@ -14,6 +14,7 @@ if sys.platform == 'win32':
     HOST = socket.gethostbyname(socket.gethostname())
 else:
     HOST = input("HOST: ")
+print(HOST)
 PORT = 3702
 server.bind((HOST, PORT))
 server.listen(1)
@@ -25,8 +26,10 @@ while 1:
     if data == '(&s)':
         RecieveString(conn)
     elif data == '(&f)':
-        RecieveFile(conn[0])
+        RecieveFile(conn)
     elif data == '(&d)':
         RecieveFolder(conn)
+    elif data == '(&t)':
+        RecieveTree(conn)
     if data == '(!!)':
         break
