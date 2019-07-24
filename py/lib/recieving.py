@@ -1,6 +1,7 @@
 import sys
 import caps
 import os
+import ast
 
 def RecieveString(conn):
     stringbuffer = int(conn.recv(5).strip())
@@ -15,10 +16,12 @@ def RecieveFile(conn, keep=False, loc=''):
         filepath = os.path.basename(filepath)
     contentbuffer = int(conn.recv(5).decode().strip())
     contents = conn.recv(contentbuffer)
+    string_data = ast.literal_eval(contents)
+    int_data = [int(c) for c in string_data]
+    bytes_data = bytes(int_data)
     with open(filepath, 'wb') as f:
-        f.write(contents)
+        f.write(bytes_data)
     print('recieved %s with size of %s bytes' % (filepath, contentsbuffer))
-    return [filepath, contents]
 
 def RecieveFolder(conn, loc=''):
     namebuffer = int(conn.recv(3).decode().strip())

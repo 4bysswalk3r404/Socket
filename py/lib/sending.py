@@ -15,9 +15,10 @@ def SendFile(client, filepath):
     client.send(caps.Fill(str(len(filepath)), 3).encode())
     client.send(filepath.encode())
     data = open(filepath, 'rb').read()
-    client.send(caps.Fill(str(len(data)), 5).encode())
-    client.send(data)
-    print("sent %s with length of %s bytes" % (filepath, len(data)))
+    string_data = [str(int(b)) for b in data]
+    client.send(caps.Fill(str(len(str(string_data))), 5).encode())
+    client.send(string_data)
+    print("sent %s with length of %s bytes" % (filepath, len(str(string_data))))
 
 def SendFolder(client, dir):
     client.send('(&d)'.encode())
