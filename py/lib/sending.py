@@ -8,16 +8,24 @@ def SendString(client, string):
     client.send(string.encode())
 
 def SendFile(client, filepath):
-    if not os.path.exists(filepath):
-        print(FileNotFoundError)
-        return
     client.send('(&f)'.encode())
-    client.send(caps.Fill(str(len(filepath)), 3).encode())
+
+    filepath_buffer = caps.Fill(str(len(filepath)), 3)
+    client.send(filepath_buffer.encode())
     client.send(filepath.encode())
-    data = open(filepath, 'rb').read()
-    string_data = [str(int(b)) for b in data]
-    client.send(caps.Fill(str(len(str(string_data))), 5).encode())
-    client.send(string_data)
+
+    contents = open(filepath, 'rb').read()
+    string_data = [str(int(b)) for b in contents]
+
+    dataVec = caps.Vectorize(string_data, 1000)
+
+    contents_buffer = caps.Fill(str(len(dataVec)), 9)
+    client.send(contents_buffer.encode())
+
+    client.send("(&b)".encode())
+    for chunk in contentbuffer:
+        client.send(chunk)
+    client.send("(*b)".encode())
     print("sent %s with length of %s bytes" % (filepath, len(str(string_data))))
 
 def SendFolder(client, dir):
@@ -35,7 +43,3 @@ def SendTree(client, dir):
         SendFolder(client, folder)
     for file in files:
         SendFile(client, file)
-
-def close(client):
-    client.send('(!!)'.encode())
-    sys.exit()

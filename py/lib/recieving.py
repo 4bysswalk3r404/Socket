@@ -12,10 +12,18 @@ def RecieveString(conn):
 def RecieveFile(conn, keep=False, loc=''):
     namebuffer = int(conn.recv(3).decode().strip())
     filepath = loc + conn.recv(namebuffer).decode()
-    if not keep:
-        filepath = os.path.basename(filepath)
-    contentbuffer = int(conn.recv(5).decode().strip())
-    contents = conn.recv(contentbuffer)
+
+    contents_buffer = int(conn.recv(9).decode().strip())
+    print("recieving %s with a size of %s bytes" % (filepath, contents_buffer))
+
+    tag = conn.recv(4).decode()
+    contents = ""
+    for i in contents_buffer:
+        contents += conn.recv(contents_buffer).decode()
+        print("\r%s" % i, end="")
+    tag = conn.recv(4).decode()
+    print(tag)
+
     string_data = ast.literal_eval(contents)
     int_data = [int(c) for c in string_data]
     bytes_data = bytes(int_data)
