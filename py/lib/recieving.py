@@ -13,16 +13,24 @@ def RecieveFile(conn, keep=False, loc=''):
     namebuffer = int(conn.recv(3).decode().strip())
     filepath = loc + conn.recv(namebuffer).decode()
 
+    input("namebuffer: %s, filepath: %s" % (namebuffer, filepath))
+
     contents_buffer = int(conn.recv(9).decode().strip())
-    print("recieving %s with a size of %s bytes" % (filepath, contents_buffer))
+    input("recieving %s with a size of %s bytes" % (filepath, contents_buffer))
+    #print("recieving %s with a size of %s bytes" % (filepath, contents_buffer))
 
     tag = conn.recv(4).decode()
+    input("tag: " + tag)
+
+    b = ''
     contents = ""
     for i in contents_buffer:
         contents += conn.recv(contents_buffer).decode()
-        print("\r%s" % i, end="")
+        if b != 'y':
+            b = input('i: ' + str(i))
+        #print("\r%s" % i, end="")
     tag = conn.recv(4).decode()
-    print(tag)
+    input("tag: " + tag)
 
     string_data = ast.literal_eval(contents)
     int_data = [int(c) for c in string_data]

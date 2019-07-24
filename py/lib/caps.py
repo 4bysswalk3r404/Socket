@@ -23,9 +23,7 @@ def Snip(string, cap):
 
 def Vectorize(string, buffer=1000):
     vec = []
-    while string:
-        vec.append(string[:buffer])
-        string = string[buffer:]
+    vec = [string[x:x+buffer] for x in range(0, len(string), buffer)]
     if len(vec[-1] != buffer):
         vec[-1] = Fill(vec[-1], buffer)
     return vec
