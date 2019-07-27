@@ -4,7 +4,7 @@ import os
 import random
 import encrypt
 
-def ReceiveData(conn):
+def ReceiveData(conn, datatype=bytes):
     #recieve seed
     chared = conn.recv(6).decode()
     seed = encrypt.uncharcoal(chared)
@@ -16,27 +16,17 @@ def ReceiveData(conn):
     #recieve all the data!!!
     data = []
     for i in range(baselen):
-        chunk = conn.recv(1000)
-        print("i: ", i)
-        data.append(encrypt.decrypt(chunk, seed, bytes))
+        chunk = conn.recv(1000).decode()
+        data.append(encrypt.decrypt(chunk, seed))
         conn.send(b'$')
-    chunk = conn.recv(endlen)
-    print("chunk: ", chunk)
-    data.append(encrypt.decrypt(chunk, seed, bytes))
+    chunk = conn.recv(endlen).decode()
+    data.append(encrypt.decrypt(chunk, seed))
     conn.send(b'$')
     return ''.join(data)
 
 def RecieveString(conn):
-    #recieve seed
-    chared = conn.recv(6).decode()
-    seed = encrypt.uncharcoal(chared)
-
-    #recieve encrypted string and decrypt it
-    stringbuffer = int(conn.recv(6).decode().strip())
-    encrypted = conn.recv(stringbuffer).decode()
-    decrypted = encrypt.decrypt(encrypted, seed)
-
-    print('(string)', decrypted)
+    string = ReceiveData(conn, str)
+    print('(string)', string)
 
 def RecieveFile(conn, keep=False, loc=''):
     #recieve filename buffer and filename
@@ -47,18 +37,10 @@ def RecieveFile(conn, keep=False, loc=''):
     baselen = int(conn.recv(7).decode().strip())
     endlen  = int(conn.recv(3).decode().strip())
 
-    #recieve file contents in 1000 size buffers
-    contents = []
-    for _ in range(baselen):
-        chunk = conn.recv(1000)
-        contents.append(chunk)
-        conn.send(b'$')
-    chunk = conn.recv(endlen)
-    contents.append(chunk)
-    conn.send(b'$')
+    contents = ReceiveData(conn)
 
     #write to file
     with open(filename, "wb") as file:
         for chunk in contents:
             file.write(chunk)
-    print("received %s with size of %s bytes" % (filename, (baselen * 1000) + endlen))
+    print("received %s with size of %s bytes" % (filename, len(contents)))

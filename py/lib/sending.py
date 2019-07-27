@@ -4,15 +4,14 @@ import os
 import random
 import encrypt
 
-def SendData(client, data, datatype=str):
-    client.send(b'(&b)')
-    #get and send random seed
+def SendData(client, data, datatype=bytes):
+    #get seed, char it, send it
     seed = random.randrange(16777216)
     chared = encrypt.charcoal(seed)
     client.send(chared.encode())
 
     #encrypt data and Vectorize it
-    encrypted = encrypt.encrypt(data, seed, datatype)
+    encrypted = encrypt.encrypt(data, seed)
     encryptedvec = caps.Vectorize(encrypted)
 
     #send array size - 1 and buffer size of last element
@@ -21,7 +20,6 @@ def SendData(client, data, datatype=str):
 
     #send all the data!!!
     for chunk in encryptedvec:
-        print(chunk)
         client.send(chunk)
         pause = client.recv(1)
         if pause != b'$':
@@ -29,15 +27,7 @@ def SendData(client, data, datatype=str):
 
 def SendString(client, string):
     client.send(b'(&s)')
-    #get and send random seed
-    seed = random.randrange(16777216)
-    chared = encrypt.charcoal(seed)
-    client.send(chared.encode())
-
-    #send encrypted string
-    encrypted = encrypt.encrypt(string, seed)
-    client.send(caps.Fill(len(encrypted), 6).encode())
-    client.send(encrypted)
+    SendData(client, string, str)
 
 def SendFile(client, filename):
     #make sure file exists
@@ -52,18 +42,8 @@ def SendFile(client, filename):
     client.send(caps.Fill(len(filename), 2).encode())
     client.send(filename.encode())
 
-    #read file in binary format and Vectorize it
+    #read file in binary format and give it to SendData
     contents = open(filename, "rb").read()
-    binaryvec = caps.Vectorize(contents)
-
-    #send array size - 1 and buffer size of last element
-    client.send(caps.Fill(len(binaryvec)-1, 7).encode())
-    client.send(caps.Fill(len(binaryvec[-1]), 3).encode())
-
-    #loop through array, sending the buffer
-    for chunk in binaryvec:
-        client.send(chunk)
-        pause = client.recv(1)
-        if pause != b'$':
-            print("error")
+    SendData(client, contents)
+    
     print("sent %s with a size of %s bytes" % (filename, len(contents)))

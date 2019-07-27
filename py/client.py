@@ -23,12 +23,8 @@ while 1:
             protocol = 'string'
         elif command[1] == 'file':
             protocol = 'file'
-        elif command[1] == 'data':
-            protocol = 'data'
     else:
         if protocol == 'string':
             SendString(client, data)
         elif protocol == 'file':
             SendFile(client, data)
-        elif protocol == 'data':
-            SendData(client, data)
