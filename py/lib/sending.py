@@ -26,7 +26,14 @@ def SendData(client, data):
 
 def SendString(client, string):
     client.send(b'(&s)')
-    SendData(client, string)
+    #get and send random seed
+    seed = random.randrange(999999)
+    client.send(caps.Fill(seed, 6).encode())
+
+    #send encrypted string 
+    encrypted = encrypt.encrypt(string, seed)
+    client.send(caps.Fill(encrypted, 6).encode())
+    client.send(encrypted)
 
 def SendFile(client, filename):
     #make sure file exists
