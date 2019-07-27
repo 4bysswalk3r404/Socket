@@ -28,7 +28,7 @@ def SendString(client, string):
     client.send(b'(&s)')
     #get and send random seed
     seed = random.randrange(16777216)
-    chared = encrypt.charcoal(seed, 3)
+    chared = encrypt.charcoal(seed, 6)
     client.send(chared.encode())
 
     #send encrypted string

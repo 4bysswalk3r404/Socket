@@ -25,8 +25,8 @@ def ReceiveData(conn):
 
 def RecieveString(conn):
     #recieve seed
-    chared = int(conn.recv(3).decode().strip())
-    seed = encrypt.uncharcoal(chared, 3)
+    chared = conn.recv(6).decode()
+    seed = encrypt.uncharcoal(chared)
 
     #recieve encrypted string and decrypt it
     stringbuffer = int(conn.recv(6).decode().strip())
