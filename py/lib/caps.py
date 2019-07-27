@@ -12,12 +12,15 @@ def lastis(string, sub):
     else:
         return False
 
-def Fill(data, bufsize=32):
+def Fill(data, buffsize=32):
     if not type(data) is str:
         string = str(data)
     else:
         string = data
-    return string + (' ' * (bufsize - len(string)))
+    return string + (' ' * (buffsize - len(string)))
+
+def ZeroFill(string, buffsize):
+    return ('0' * (buffsize - len(string))) + string
 
 def Snip(string, cap):
     if cap in string:

@@ -25,15 +25,15 @@ def ReceiveData(conn):
 
 def RecieveString(conn):
     #recieve seed
-    seed = int(conn.recv(6).decode().strip())
-    print(seed)
+    chared = int(conn.recv(3).decode().strip())
+    seed = encrypt.uncharcoal(chared, 3)
 
     #recieve encrypted string and decrypt it
     stringbuffer = int(conn.recv(6).decode().strip())
     encrypted = conn.recv(stringbuffer).decode()
-    decrypted = encrypt.decrypt(encrypted, seed).decode()
+    decrypted = encrypt.decrypt(encrypted, seed)
 
-    print('(string)', string)
+    print('(string)', decrypted)
 
 def RecieveFile(conn, keep=False, loc=''):
     #recieve filename buffer and filename
