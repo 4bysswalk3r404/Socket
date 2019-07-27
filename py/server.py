@@ -27,3 +27,5 @@ while 1:
         RecieveString(conn)
     elif data == '(&f)':
         RecieveFile(conn)
+    elif data == '(&F)':
+        ReceiveFileUnprotected(conn)

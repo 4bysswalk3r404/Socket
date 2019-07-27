@@ -23,8 +23,12 @@ while 1:
             protocol = 'string'
         elif command[1] == 'file':
             protocol = 'file'
+        elif command[1] == 'file' and command[2] == 'unprotected':
+            protocol = 'file unprotected'
     else:
         if protocol == 'string':
             SendString(client, data)
         elif protocol == 'file':
             SendFile(client, data)
+        elif protocol == 'file unprotected':
+            SendFileUnprotected(client, data)

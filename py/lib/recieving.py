@@ -4,10 +4,11 @@ import os
 import random
 import encrypt
 
-def ReceiveData(conn, datatype=bytes):
+def ReceiveData(conn, datatype=bytes, protected=True):
     #recieve seed
-    chared = conn.recv(6).decode()
-    seed = encrypt.uncharcoal(chared)
+    if protected:
+        chared = conn.recv(6).decode()
+        seed = encrypt.uncharcoal(chared)
 
     #recieve base array size and end array buffer size
     baselen = int(conn.recv(7).decode().strip())
@@ -17,16 +18,36 @@ def ReceiveData(conn, datatype=bytes):
     data = []
     for i in range(baselen):
         chunk = conn.recv(1000)
-        data.append(encrypt.decrypt(chunk, seed, datatype))
+        if protected:
+            data.append(encrypt.decrypt(chunk, seed, datatype))
+        else:
+            data.append(chunk)
         conn.send(b'$')
     chunk = conn.recv(endlen)
-    data.append(encrypt.decrypt(chunk, seed, datatype))
+    if protected:
+        data.append(encrypt.decrypt(chunk, seed, datatype))
+    else:
+        data.append(chunk)
     conn.send(b'$')
-    return ''.join(data)
+    if datatype is bytes:
+        return ''.join(data).encode()
+    elif datatype is str:
+        return ''.join(data)
 
 def RecieveString(conn):
     string = ReceiveData(conn, str)
     print('(string)', string)
+
+def ReceiveFileUnprotected(conn):
+    #recieve filename buffer and filename
+    filename_buffer = int(conn.recv(2).decode().strip())
+    filename = conn.recv(filename_buffer).decode()
+
+    #get contents and write it to file
+    contents = ReceiveData(conn, protected=False)
+    with open(filename, "wb") as file:
+        file.write(contents)
+    print("received %s with size of %s bytes" % (filename, len(contents)))
 
 def RecieveFile(conn, keep=False, loc=''):
     #recieve filename buffer and filename
@@ -36,6 +57,5 @@ def RecieveFile(conn, keep=False, loc=''):
     #get contents and write it to file
     contents = ReceiveData(conn)
     with open(filename, "wb") as file:
-        for chunk in contents:
-            file.write(chunk)
+        file.write(contents)
     print("received %s with size of %s bytes" % (filename, len(contents)))
