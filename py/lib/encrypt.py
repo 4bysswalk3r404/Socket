@@ -1,5 +1,5 @@
 import random
-import random
+import caps
 
 def encrypt(buffer, seed):
     random.seed(seed)
@@ -15,5 +15,32 @@ def decrypt(buffer, seed):
         encrypted.append(chr((ord(c) - random.randrange(256)) % 256))
     return ''.join(encrypted)
 
+def binaryToDecimal(n):
+    return int(n, 2)
+
+def decimalToBinary(n):
+    return caps.ZeroFill(bin(n).replace("0b",""), 8)
+
+def charcoal(num, buffsize):
+    binary = caps.ZeroFill(decimalToBinary(num), 24)
+    print("binary: ", binary)
+    binvec = caps.Vectorize(binary, 8)
+    print("binvec: ", binvec)
+    return ''.join([chr(binaryToDecimal(bin)) for bin in binvec])
+
+def uncharcoal(chararr, buffsize):
+    bin = ""
+    print("bin: ", end="")
+    for char in chararr:
+        bin += decimalToBinary(ord(char))
+        print(decimalToBinary(ord(char)), ' ', end="")
+    print()
+    return binaryToDecimal(bin)
+
 if __name__ == "__main__":
-    print(decrypt(encrypt('hello world\ntest test', 1), 1))
+    num = int(input("num: "))
+    coal = charcoal(num, 3)
+    print("len: ", len(coal))
+    for i in coal:
+        print(ord(i))
+    print(uncharcoal(coal, 3))
