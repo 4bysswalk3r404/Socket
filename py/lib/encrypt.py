@@ -5,15 +5,15 @@ def _encryptBytes(buffer, seed):
     random.seed(seed)
     encrypted = []
     for c in buffer:
-        encrypted.append(chr((c + random.randrange(256)) % 256))
+        encrypted.append(chr((c + random.randrange(128)) % 128))
     return ''.join(encrypted)
 
 def _decryptBytes(buffer, seed):
     random.seed(seed)
-    encrypted = []
+    decrypted = []
     for c in buffer:
-        encrypted.append(chr((c - random.randrange(256)) % 256))
-    return ''.join(encrypted)
+        decrypted.append(chr((c - random.randrange(128)) % 128))
+    return ''.join(decrypted)
 
 def _encryptStr(buffer, seed):
     random.seed(seed)
@@ -24,10 +24,10 @@ def _encryptStr(buffer, seed):
 
 def _decryptStr(buffer, seed):
     random.seed(seed)
-    encrypted = []
+    decrypted = []
     for c in buffer:
-        encrypted.append(chr((ord(c) - random.randrange(256)) % 256))
-    return ''.join(encrypted).decode()
+        decrypted.append(chr((ord(c) - random.randrange(256)) % 256))
+    return ''.join(decrypted)
 
 def encrypt(buffer, seed, datatype):
     if datatype is str:
@@ -37,6 +37,7 @@ def encrypt(buffer, seed, datatype):
 
 def decrypt(buffer, seed, datatype):
     if datatype is str:
+        buffer.decode()
         return _decryptStr(buffer, seed)
     elif datatype is bytes:
         return _decryptBytes(buffer, seed)
