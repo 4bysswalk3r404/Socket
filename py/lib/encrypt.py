@@ -18,7 +18,7 @@ def decrypt(buffer, seed, datatype=str):
     if datatype is str:
         for c in buffer:
             encrypted.append(chr((ord(c) - random.randrange(256)) % 256))
-    elif dataype is bytes:
+    elif datatype is bytes:
         for c in buffer:
             encrypted.append(chr((c - random.randrange(256)) % 256))
     return ''.join(encrypted)
