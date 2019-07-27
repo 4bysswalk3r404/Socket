@@ -1,16 +1,37 @@
 import sys
 import caps
 import os
+import encrypt
+
+def SendData(client, data):
+    #get and send random seed
+    seed = random.randrange(999999)
+    client.send(caps.Fill(seed, 6).encode())
+
+    #encrypt the data and Vectorize it
+    encrypted = encrypt.encrypt(data, seed)
+    binaryvec = caps.Vectorize(encrypted)
+
+    #send array size - 1 and buffer size of last element
+    client.send(caps.Fill(len(binaryvec)-1, 7).encode())
+    client.send(caps.Fill(len(binaryvec[-1]), 3).encode())
+
+    #loop through array, sending the buffer
+    for chunk in binaryvec:
+        client.send(chunk)
+        pause = client.recv(1)
+        if pause != b'$':
+            print("error")
 
 def SendString(client, string):
     client.send(b'(&s)')
-    client.send(caps.Fill(str(len(string)), 5).encode())
-    client.send(string.encode())
+    SendData(client, string)
 
 def SendFile(client, filename):
     #make sure file exists
     if not os.path.exists(filename):
         print(FileExistsError)
+        return
 
     #send initializing file send/recieve code
     client.send(b"(&f)")
@@ -19,7 +40,7 @@ def SendFile(client, filename):
     client.send(caps.Fill(len(filename), 2).encode())
     client.send(filename.encode())
 
-    #read file in binary format
+    #read file in binary format and Vectorize it
     contents = open(filename, "rb").read()
     binaryvec = caps.Vectorize(contents)
 
