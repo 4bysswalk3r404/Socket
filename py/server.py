@@ -27,5 +27,3 @@ while 1:
         RecieveString(conn)
     elif data == '(&f)':
         RecieveFile(conn)
-    elif data == '(&b)':
-        print(ReceiveData(conn).decode())
