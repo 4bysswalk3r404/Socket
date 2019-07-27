@@ -24,7 +24,14 @@ def ReceiveData(conn):
     return ''.join(contents)
 
 def RecieveString(conn):
-    string = ReceiveData(conn).decode()
+    #recieve seed
+    seed = conn.recv(6).decode().strip()
+
+    #recieve encrypted string and decrypt it
+    stringbuffer = conn.recv(6).decode().strip()
+    encrypted = conn.recv(stringbuffer).decode()
+    decrypted = encrypt.decrypt(encrypted, seed).decode()
+
     print('(string)', string)
 
 def RecieveFile(conn, keep=False, loc=''):
