@@ -11,7 +11,7 @@ def SendData(client, data, datatype=bytes):
     client.send(chared.encode())
 
     #encrypt data and Vectorize it
-    encrypted = encrypt.encrypt(data, seed)
+    encrypted = encrypt.encrypt(data, seed, datatype)
     encryptedvec = caps.Vectorize(encrypted)
 
     #send array size - 1 and buffer size of last element
@@ -45,5 +45,5 @@ def SendFile(client, filename):
     #read file in binary format and give it to SendData
     contents = open(filename, "rb").read()
     SendData(client, contents)
-    
+
     print("sent %s with a size of %s bytes" % (filename, len(contents)))
