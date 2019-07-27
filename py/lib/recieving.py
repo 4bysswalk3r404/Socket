@@ -7,7 +7,7 @@ import encrypt
 
 def ReceiveData(conn):
     #recieve seed
-    seed = conn.recv(6).decode().strip()
+    seed = int(conn.recv(6).decode().strip())
 
     #recieve base array size and end array buffer size
     baselen = int(conn.recv(7).decode().strip())
@@ -25,10 +25,11 @@ def ReceiveData(conn):
 
 def RecieveString(conn):
     #recieve seed
-    seed = conn.recv(6).decode().strip()
+    seed = int(conn.recv(6).decode().strip())
+    print(seed)
 
     #recieve encrypted string and decrypt it
-    stringbuffer = conn.recv(6).decode().strip()
+    stringbuffer = int(conn.recv(6).decode().strip())
     encrypted = conn.recv(stringbuffer).decode()
     decrypted = encrypt.decrypt(encrypted, seed).decode()
 
