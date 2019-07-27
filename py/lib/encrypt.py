@@ -1,29 +1,45 @@
 import random
 import caps
 
-def encrypt(buffer, seed, datatype=str):
+def _encryptBytes(buffer, seed):
     random.seed(seed)
     encrypted = []
-    if datatype is str:
-        for c in buffer:
-            encrypted.append(chr((ord(c) + random.randrange(256)) % 256))
-        ''.join(encrypted).encode()
-    elif datatype is bytes:
-        for c in buffer:
-            encrypted.append(chr((c + random.randrange(256)) % 256))
-        ''.join(encrypted)
-    return encrypted
-
-def decrypt(buffer, seed, datatype=str):
-    random.seed(seed)
-    encrypted = []
-    if datatype is str:
-        for c in buffer:
-            encrypted.append(chr((ord(c) - random.randrange(256)) % 256))
-    elif datatype is bytes:
-        for c in buffer:
-            encrypted.append(chr((c - random.randrange(256)) % 256))
+    for c in buffer:
+        encrypted.append(chr((c + random.randrange(256)) % 256))
     return ''.join(encrypted)
+
+def _decryptBytes(buffer, seed):
+    random.seed(seed)
+    encrypted = []
+    for c in buffer:
+        encrypted.append(chr((c - random.randrange(256)) % 256))
+    return ''.join(encrypted)
+
+def _encryptStr(buffer, seed):
+    random.seed(seed)
+    encrypted = []
+    for c in buffer:
+        encrypted.append(chr((ord(c) + random.randrange(256)) % 256))
+    return ''.join(encrypted).encode()
+
+def _decryptStr(buffer, seed):
+    random.seed(seed)
+    encrypted = []
+    for c in buffer:
+        encrypted.append(chr((ord(c) - random.randrange(256)) % 256))
+    return ''.join(encrypted).decode()
+
+def encrypt(buffer, seed, datatype):
+    if datatype is str:
+        return _encryptStr(buffer, seed)
+    elif datatype is bytes:
+        return _encryptBytes(buffer, seed)
+
+def decrypt(buffer, seed, datatype):
+    if datatype is str:
+        return _decryptStr(buffer, seed)
+    elif datatype is bytes:
+        return _decryptBytes(buffer, seed)
 
 def binaryToDecimal(n):
     return int(n, 2)
