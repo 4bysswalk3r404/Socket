@@ -17,10 +17,12 @@ def ReceiveData(conn):
     data = []
     for i in range(baselen):
         chunk = conn.recv(1000)
-        data.append(encrypt.decrypt(chunk, seed))
+        print("i: ", i)
+        data.append(encrypt.decrypt(chunk, seed, bytes))
         conn.send(b'$')
     chunk = conn.recv(endlen)
-    data.append(encrypt.decrypt(chunk, seed))
+    print("chunk: ", chunk)
+    data.append(encrypt.decrypt(chunk, seed, bytes))
     conn.send(b'$')
     return ''.join(data)
 
