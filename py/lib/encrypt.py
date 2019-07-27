@@ -6,7 +6,7 @@ def _encryptBytes(buffer, seed):
     encrypted = []
     for c in buffer:
         encrypted.append(chr((c + random.randrange(128)) % 128))
-    return ''.join(encrypted)
+    return ''.join(encrypted).encode()
 
 def _decryptBytes(buffer, seed):
     random.seed(seed)
@@ -37,7 +37,7 @@ def encrypt(buffer, seed, datatype):
 
 def decrypt(buffer, seed, datatype):
     if datatype is str:
-        buffer.decode()
+        buffer = buffer.decode()
         return _decryptStr(buffer, seed)
     elif datatype is bytes:
         return _decryptBytes(buffer, seed)
