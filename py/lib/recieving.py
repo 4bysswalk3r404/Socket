@@ -1,27 +1,28 @@
 import sys
 import caps
 import os
-import ast
 import random
 import encrypt
 
 def ReceiveData(conn):
     #recieve seed
-    seed = int(conn.recv(6).decode().strip())
+    chared = conn.recv(6).decode()
+    seed = encrypt.uncharcoal(chared)
 
     #recieve base array size and end array buffer size
     baselen = int(conn.recv(7).decode().strip())
     endlen  = int(conn.recv(3).decode().strip())
 
-    contents = []
-    for _ in range(baselen):
-        chunk = encrypt.decrypt(conn.recv(1000), seed)
-        contents.append(chunk)
+    #recieve all the data!!!
+    data = []
+    for i in range(baselen):
+        chunk = conn.recv(1000)
+        data.append(encrypt.decrypt(chunk, seed))
         conn.send(b'$')
-    chunk = encrypt.decrypt(conn.recv(endlen), seed)
-    contents.append(chunk)
+    chunk = conn.recv(endlen)
+    data.append(encrypt.decrypt(chunk, seed))
     conn.send(b'$')
-    return ''.join(contents)
+    return ''.join(data)
 
 def RecieveString(conn):
     #recieve seed
