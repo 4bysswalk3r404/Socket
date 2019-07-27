@@ -2,21 +2,38 @@ import sys
 import caps
 import os
 import ast
+import encrypt
+
+def ReceiveData(conn):
+    #recieve seed
+    seed = conn.recv(6).decode().strip()
+
+    #recieve base array size and end array buffer size
+    baselen = int(conn.recv(7).decode().strip())
+    endlen  = int(conn.recv(3).decode().strip())
+
+    contents = []
+    for _ in range(baselen):
+        chunk = encrypt.decrypt(conn.recv(1000), seed)
+        contents.append(chunk)
+        conn.send(b'$')
+    chunk = encrypt.decrypt(conn.recv(endlen), seed)
+    contents.append(chunk)
+    conn.send(b'$')
+    return ''.join(contents)
 
 def RecieveString(conn):
-    stringbuffer = int(conn.recv(5).strip())
-    string = conn.recv(stringbuffer).decode()
+    string = ReceiveData(conn).decode()
     print('(string)', string)
-    return string
 
 def RecieveFile(conn, keep=False, loc=''):
     #recieve filename buffer and filename
-    filename_buffer = int(conn.recv(2).strip().decode())
+    filename_buffer = int(conn.recv(2).decode().strip())
     filename = conn.recv(filename_buffer).decode()
 
     #recieve base array size and end array buffer size
-    baselen = int(conn.recv(7).strip().decode())
-    endlen  = int(conn.recv(3).strip().decode())
+    baselen = int(conn.recv(7).decode().strip())
+    endlen  = int(conn.recv(3).decode().strip())
 
     #recieve file contents in 1000 size buffers
     contents = []
