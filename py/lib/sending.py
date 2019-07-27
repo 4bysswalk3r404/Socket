@@ -1,6 +1,7 @@
 import sys
 import caps
 import os
+import random
 import encrypt
 
 def SendData(client, data):

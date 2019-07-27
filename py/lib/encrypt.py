@@ -1,4 +1,5 @@
 import random
+import random
 
 def encrypt(buffer, seed):
     random.seed(seed)
