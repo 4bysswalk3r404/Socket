@@ -3,7 +3,7 @@ import caps
 import os
 
 def SendString(client, string):
-    client.send('(&s)'.encode())
+    client.send(b'(&s)')
     client.send(caps.Fill(str(len(string)), 5).encode())
     client.send(string.encode())
 
@@ -13,10 +13,10 @@ def SendFile(client, filename):
         print(FileExistsError)
 
     #send initializing file send/recieve code
-    client.send("(&f)".encode())
+    client.send(b"(&f)")
 
     #send filename buffer and filename
-    client.send(str(len(filename)).encode())
+    client.send(caps.Fill(len(filename), 2).encode())
     client.send(filename.encode())
 
     #read file in binary format
@@ -30,3 +30,7 @@ def SendFile(client, filename):
     #loop through array, sending the buffer
     for chunk in binaryvec:
         client.send(chunk)
+        pause = client.recieve(1)
+        if pause != b'$':
+            print("error")
+    print("sent %s with a size of %s bytes" % (filename, len(contents)))

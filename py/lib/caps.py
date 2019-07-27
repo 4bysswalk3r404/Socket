@@ -12,7 +12,11 @@ def lastis(string, sub):
     else:
         return False
 
-def Fill(string, bufsize=32):
+def Fill(data, bufsize=32):
+    if not type(data) is str:
+        string = str(data)
+    else:
+        string = data
     return string + (' ' * (bufsize - len(string)))
 
 def Snip(string, cap):
@@ -22,4 +26,4 @@ def Snip(string, cap):
         return string.strip()
 
 def Vectorize(bytes, buffer=1000):
-    return [string[x:x+buffer] for x in range(0, len(string), buffer)]
+    return [bytes[x:x+buffer] for x in range(0, len(bytes), buffer)]

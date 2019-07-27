@@ -11,17 +11,18 @@ def RecieveString(conn):
 
 def RecieveFile(conn, keep=False, loc=''):
     #recieve filename buffer and filename
-    filename_buffer = int(conn.recv(2).decode())
+    filename_buffer = int(conn.recv(2).strip().decode())
     filename = conn.recv(filename_buffer).decode()
 
     #recieve base array size and end array buffer size
-    baselen = int(client.recv(7).decode())
-    endlen  = int(client.recv(3).decode())
+    baselen = int(conn.recv(7).strip().decode())
+    endlen  = int(conn.recv(3).strip().decode())
 
     #recieve file contents in 1000 size buffers
     contents = []
     for _ in range(baselen):
         chunk = conn.recv(1000)
+        conn.send(b'$')
         contents.append(chunk)
     chunk = conn.recv(endlen)
     contents.append(chunk)
