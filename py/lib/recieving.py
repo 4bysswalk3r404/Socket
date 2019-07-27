@@ -22,12 +22,14 @@ def RecieveFile(conn, keep=False, loc=''):
     contents = []
     for _ in range(baselen):
         chunk = conn.recv(1000)
-        conn.send(b'$')
         contents.append(chunk)
+        conn.send(b'$')
     chunk = conn.recv(endlen)
     contents.append(chunk)
+    conn.send(b'$')
 
     #write to file
     with open(filename, "wb") as file:
         for chunk in contents:
             file.write(chunk)
+    print("received %s with size of %s bytes" % (filename, (baselen * 1000) + endlen))

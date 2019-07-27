@@ -30,7 +30,7 @@ def SendFile(client, filename):
     #loop through array, sending the buffer
     for chunk in binaryvec:
         client.send(chunk)
-        pause = client.recieve(1)
+        pause = client.recv(1)
         if pause != b'$':
             print("error")
     print("sent %s with a size of %s bytes" % (filename, len(contents)))
