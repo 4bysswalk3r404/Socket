@@ -23,18 +23,13 @@ def decimalToBinary(n):
 
 def charcoal(num):
     binary = caps.ZeroFill(decimalToBinary(num), 24)
-    print("binary: ", binary)
     binvec = caps.Vectorize(binary, 4)
-    print("binvec: ", binvec)
     return ''.join([chr(binaryToDecimal(bin)) for bin in binvec])
 
 def uncharcoal(chararr):
     bin = ""
-    print("bin: ")
     for char in chararr:
         bin += decimalToBinary(ord(char))
-        print(decimalToBinary(ord(char)))
-    print()
     return binaryToDecimal(bin)
 
 if __name__ == "__main__":

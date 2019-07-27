@@ -5,20 +5,22 @@ import random
 import encrypt
 
 def SendData(client, data):
+    client.send(b'(&b)')
     #get and send random seed
-    seed = random.randrange(999999)
-    client.send(caps.Fill(seed, 6).encode())
+    seed = random.randrange(16777216)
+    chared = encrypt.charcoal(seed)
+    client.send(chared.encode())
 
-    #encrypt the data and Vectorize it
+    #encrypt data and Vectorize it
     encrypted = encrypt.encrypt(data, seed)
-    binaryvec = caps.Vectorize(encrypted)
+    encryptedvec = caps.Vectorize(encrypted)
 
     #send array size - 1 and buffer size of last element
-    client.send(caps.Fill(len(binaryvec)-1, 7).encode())
-    client.send(caps.Fill(len(binaryvec[-1]), 3).encode())
+    client.send(caps.Fill(len(encryptedvec)-1, 7).encode())
+    client.send(caps.Fill(len(encryptedvec[-1]), 3).encode())
 
-    #loop through array, sending the buffer
-    for chunk in binaryvec:
+    #send all the data!!!
+    for chunk in encryptedvec:
         client.send(chunk)
         pause = client.recv(1)
         if pause != b'$':
@@ -28,7 +30,7 @@ def SendString(client, string):
     client.send(b'(&s)')
     #get and send random seed
     seed = random.randrange(16777216)
-    chared = encrypt.charcoal(seed, 6)
+    chared = encrypt.charcoal(seed)
     client.send(chared.encode())
 
     #send encrypted string

@@ -27,9 +27,5 @@ while 1:
         RecieveString(conn)
     elif data == '(&f)':
         RecieveFile(conn)
-    elif data == '(&d)':
-        RecieveFolder(conn)
-    elif data == '(&t)':
-        RecieveTree(conn)
-    if data == '(!!)':
-        break
+    elif data == '(&b)':
+        print(ReceiveData(conn).decode())
