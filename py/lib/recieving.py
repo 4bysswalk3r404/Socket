@@ -2,6 +2,7 @@ import sys
 import caps
 import os
 import ast
+import random
 import encrypt
 
 def ReceiveData(conn):
