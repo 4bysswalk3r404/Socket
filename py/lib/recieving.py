@@ -10,48 +10,23 @@ def RecieveString(conn):
     return string
 
 def RecieveFile(conn, keep=False, loc=''):
-    namebuffer = int(conn.recv(3).decode().strip())
-    filepath = loc + conn.recv(namebuffer).decode()
+    #recieve filename buffer and filename
+    filename_buffer = int(conn.recv(2).decode())
+    filename = conn.recv(filename_buffer).decode()
 
-    input("namebuffer: %s, filepath: %s" % (namebuffer, filepath))
+    #recieve base array size and end array buffer size
+    baselen = int(client.recv(7).decode())
+    endlen  = int(client.recv(3).decode())
 
-    contents_buffer = int(conn.recv(9).decode().strip())
-    input("recieving %s with a size of %s bytes" % (filepath, contents_buffer))
-    #print("recieving %s with a size of %s bytes" % (filepath, contents_buffer))
+    #recieve file contents in 1000 size buffers
+    contents = []
+    for _ in range(baselen):
+        chunk = conn.recv(1000)
+        contents.append(chunk)
+    chunk = conn.recv(endlen)
+    contents.append(chunk)
 
-    tag = conn.recv(4).decode()
-    input("tag: " + tag)
-
-    b = ''
-    contents = ""
-    for i in contents_buffer:
-        contents += conn.recv(contents_buffer).decode()
-        if b != 'y':
-            b = input('i: ' + str(i))
-        #print("\r%s" % i, end="")
-    tag = conn.recv(4).decode()
-    input("tag: " + tag)
-
-    string_data = ast.literal_eval(contents)
-    int_data = [int(c) for c in string_data]
-    bytes_data = bytes(int_data)
-    with open(filepath, 'wb') as f:
-        f.write(bytes_data)
-    print('recieved %s with size of %s bytes' % (filepath, contentsbuffer))
-
-def RecieveFolder(conn, loc=''):
-    namebuffer = int(conn.recv(3).decode().strip())
-    dirname = loc + conn.recv(namebuffer).decode()
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-    print('(folder)', dirname)
-    return dirname
-
-def RecieveTree(conn):
-    dir = input("Location of tree: ")
-    foldernum = int(conn.recv(3).decode().strip())
-    filenum = int(conn.recv(3).decode().strip())
-    for _ in range(foldernum):
-        RecieveFolder(conn, loc=dir)
-    for _ in range(filenum):
-        RecieveFile(conn, keep=True, loc=dir)
+    #write to file
+    with open(filename, "wb") as file:
+        for chunk in contents:
+            file.write(chunk)

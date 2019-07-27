@@ -7,39 +7,26 @@ def SendString(client, string):
     client.send(caps.Fill(str(len(string)), 5).encode())
     client.send(string.encode())
 
-def SendFile(client, filepath):
-    client.send('(&f)'.encode())
+def SendFile(client, filename):
+    #make sure file exists
+    if not os.path.exists(filename):
+        print(FileExistsError)
 
-    filepath_buffer = caps.Fill(str(len(filepath)), 3)
-    client.send(filepath_buffer.encode())
-    client.send(filepath.encode())
+    #send initializing file send/recieve code
+    client.send("(&f)".encode())
 
-    contents = open(filepath, 'rb').read()
-    string_data = [str(int(b)) for b in contents]
+    #send filename buffer and filename
+    client.send(str(len(filename)).encode())
+    client.send(filename.encode())
 
-    dataVec = caps.Vectorize(string_data, 1000)
+    #read file in binary format
+    contents = open(filename, "rb").read()
+    binaryvec = caps.Vectorize(contents)
 
-    contents_buffer = caps.Fill(str(len(dataVec)), 9)
-    client.send(contents_buffer.encode())
+    #send array size - 1 and buffer size of last element
+    client.send(caps.Fill(len(binaryvec)-1, 7).encode())
+    client.send(caps.Fill(len(binaryvec[-1]), 3).encode())
 
-    client.send("(&b)".encode())
-    for chunk in contentbuffer:
+    #loop through array, sending the buffer
+    for chunk in binaryvec:
         client.send(chunk)
-    client.send("(*b)".encode())
-    print("sent %s with length of %s bytes" % (filepath, len(str(string_data))))
-
-def SendFolder(client, dir):
-    client.send('(&d)'.encode())
-    client.send(caps.Fill(str(len(dir)), 3).encode())
-    client.send(dir.encode())
-
-def SendTree(client, dir):
-    client.send('(&t)'.encode())
-    folders = [path.replace(dir, '.') for sub in [[os.path.join(w[0], file) for file in w[1]] for w in os.walk(dir)] for path in sub]
-    files = [path.replace(dir, '.') for sub in [[os.path.join(w[0], file) for file in w[2]] for w in os.walk(dir)] for path in sub]
-    client.send(caps.Fill(str(len(folders)), 3))
-    client.send(caps.Fill(str(len(files)), 3))
-    for folder in folders:
-        SendFolder(client, folder)
-    for file in files:
-        SendFile(client, file)

@@ -21,11 +21,5 @@ def Snip(string, cap):
     else:
         return string.strip()
 
-def Vectorize(string, buffer=1000):
-    vec = []
-    vec = [string[x:x+buffer] for x in range(0, len(string), buffer)]
-    last = vec.pop()
-    if len(last) != buffer:
-        last = Fill(last, buffer)
-    vec.append(last)
-    return vec
+def Vectorize(bytes, buffer=1000):
+    return [string[x:x+buffer] for x in range(0, len(string), buffer)]
