@@ -33,13 +33,8 @@ def RecieveFile(conn, keep=False, loc=''):
     filename_buffer = int(conn.recv(2).decode().strip())
     filename = conn.recv(filename_buffer).decode()
 
-    #recieve base array size and end array buffer size
-    baselen = int(conn.recv(7).decode().strip())
-    endlen  = int(conn.recv(3).decode().strip())
-
+    #get contents and write it to file
     contents = ReceiveData(conn)
-
-    #write to file
     with open(filename, "wb") as file:
         for chunk in contents:
             file.write(chunk)
