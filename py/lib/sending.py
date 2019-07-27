@@ -30,9 +30,9 @@ def SendString(client, string):
     seed = random.randrange(999999)
     client.send(caps.Fill(seed, 6).encode())
 
-    #send encrypted string 
+    #send encrypted string
     encrypted = encrypt.encrypt(string, seed)
-    client.send(caps.Fill(encrypted, 6).encode())
+    client.send(caps.Fill(len(encrypted), 6).encode())
     client.send(encrypted)
 
 def SendFile(client, filename):
