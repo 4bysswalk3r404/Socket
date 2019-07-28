@@ -4,6 +4,14 @@ import os
 import random
 import encrypt
 
+def _SendDataSmall(client, data):
+    seed = random.randrange(16777216)
+    charredSeed = encrypt.charcoal(seed, 3)
+    databuffer = encrypt.charcoal(len(data), 1)
+    client.send(charredSeed)
+    client.send(databuffer)
+    client.send(encrypt.encrypt(data, seed))
+
 def SendData(client, data, safe=True):
     #get random seed, charcoal it, send it
     seed = random.randrange(16777216)
@@ -42,9 +50,7 @@ def SendFile(client, filename):
         return
     client.send(b'\x02')
 
-    charredFileNameBuffer = encrypt.charcoal(len(filename), 1)
-    client.send(charredFileNameBuffer)
-    client.send(encrypt.BytesEncode(filename))
+    _SendDataSmall(client, filename)
 
     data = open(filename, 'rb').read()
     SendData(client, data)
