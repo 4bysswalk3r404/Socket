@@ -3,11 +3,8 @@ import caps
 import os
 import random
 import encrypt
-import gzip
-import zlib
 
-#compression is broken
-def SendData(client, data, safe=True, compression=False):
+def SendData(client, data, safe=True):
     #get random seed, charcoal it, send it
     seed = random.randrange(16777216)
     charredSeed = encrypt.charcoal(seed, 3)
@@ -15,21 +12,19 @@ def SendData(client, data, safe=True, compression=False):
 
     #encrypt data and Vectorize it
     encrypted = encrypt.encrypt(data, seed)
-    if compression:
-        encrypted = zlib.compress(encrypted)
     encryptedVec = caps.Vectorize(encrypted)
 
     #get base length of buffer array
     basebufferlen = len(encryptedVec) - 1
-    basebufferlen = caps.Fill(encrypt.BytesEncode(str(basebufferlen)), 10)
+    charredBBL = encrypt.charcoal(basebufferlen, 4)
 
     #get buffer length of last element
     endbufferlen = len(encryptedVec[-1])
-    endbufferlen = caps.Fill(encrypt.BytesEncode(str(endbufferlen)), 4)
+    charredEBL = encrypt.charcoal(endbufferlen, 2)
 
     #send basebufferlen and endbufferlen
-    client.send(basebufferlen)
-    client.send(endbufferlen)
+    client.send(charredBBL)
+    client.send(charredEBL)
 
     for chunk in encryptedVec:
         client.send(chunk)
@@ -47,8 +42,8 @@ def SendFile(client, filename):
         return
     client.send(b'\x02')
 
-    filenamebuffer = encrypt.BytesEncode(str(len(filename)))
-    client.send(caps.Fill(filenamebuffer, 3))
+    charredFileNameBuffer = encrypt.charcoal(len(filename), 1)
+    client.send(charredFileNameBuffer)
     client.send(encrypt.BytesEncode(filename))
 
     data = open(filename, 'rb').read()
