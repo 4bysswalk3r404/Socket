@@ -3,8 +3,11 @@ import caps
 import os
 import random
 import encrypt
+import gzip
+import zlib
 
-def SendData(client, data, safe=True):
+#compression is broken
+def SendData(client, data, safe=True, compression=False):
     #get random seed, charcoal it, send it
     seed = random.randrange(16777216)
     charredSeed = encrypt.charcoal(seed, 3)
@@ -12,6 +15,8 @@ def SendData(client, data, safe=True):
 
     #encrypt data and Vectorize it
     encrypted = encrypt.encrypt(data, seed)
+    if compression:
+        encrypted = zlib.compress(encrypted)
     encryptedVec = caps.Vectorize(encrypted)
 
     #get base length of buffer array
@@ -26,13 +31,11 @@ def SendData(client, data, safe=True):
     client.send(basebufferlen)
     client.send(endbufferlen)
 
-    for i, chunk in enumerate(encryptedVec):
+    for chunk in encryptedVec:
         client.send(chunk)
-        print("\r%s" % i, end="")
         pause = client.recv(1)
         if pause != b'\x00':
             print('error')
-    print()
 
 def SendString(client, string):
     client.send(b'\x01')

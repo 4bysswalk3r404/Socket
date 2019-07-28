@@ -3,8 +3,11 @@ import caps
 import os
 import random
 import encrypt
+import gzip
+import zlib
 
-def ReceiveData(conn, safe=True):
+#compression is broken
+def ReceiveData(conn, safe=True, compression=False):
     charredSeed = conn.recv(3)
     seed = encrypt.uncharcoal(charredSeed)
 
@@ -14,13 +17,13 @@ def ReceiveData(conn, safe=True):
     buffers.append(endbufferlen)
 
     data = b''
-    for i, buffer in enumerate(buffers):
+    for buffer in buffers:
         chunk = conn.recv(buffer)
-        print("\r%i" % i, end="")
-        data += encrypt.decrypt(chunk, seed)
+        data += chunk
         conn.send(b'\x00')
-    print()
-    return data
+    if compression:
+        data = zlib.decompress(data)
+    return encrypt.decrypt(data, seed)
 
 def RecieveString(conn):
     string = encrypt.BytesDecode(ReceiveData(conn))
