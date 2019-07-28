@@ -53,5 +53,5 @@ def SendFile(client, filename):
     _SendDataSmall(client, encrypt.BytesEncode(filename))
 
     data = open(filename, 'rb').read()
-    SendData(client, encrypt.BytesEncode(data))
+    SendData(client, data)
     print("sent %s with size of %s bytes" % (filename, len(data)))
