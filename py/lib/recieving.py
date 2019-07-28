@@ -12,6 +12,8 @@ def ReceiveData(conn, safe=True):
     charredEBL = conn.recv(2)
     basebufferlen = encrypt.uncharcoal(charredBBL)
     endbufferlen = encrypt.uncharcoal(charredBBL)
+    print("{charredBBL: %s, charredEBL: %s}" % (charredBBL, charredEBL))
+    print("{basebufferlen: %s, endbufferlen: %s}" % (basebufferlen, endbufferlen))
     buffers = [1000 for _ in range(basebufferlen)]
     buffers.append(endbufferlen)
 
