@@ -3,16 +3,15 @@ import caps
 import os
 import random
 import encrypt
-import gzip
-import zlib
 
-#compression is broken
-def ReceiveData(conn, safe=True, compression=False):
+def ReceiveData(conn, safe=True):
     charredSeed = conn.recv(3)
     seed = encrypt.uncharcoal(charredSeed)
 
-    basebufferlen = int(encrypt.BytesDecode(caps.Strip(conn.recv(10))))
-    endbufferlen = int(encrypt.BytesDecode(caps.Strip(conn.recv(4))))
+    charredBBL = conn.recv(4)
+    charredEBL = conn.recv(2)
+    basebufferlen = encrypt.uncharcoal(charredBBL)
+    endbufferlen = encrypt.uncharcoal(charredBBL)
     buffers = [1000 for _ in range(basebufferlen)]
     buffers.append(endbufferlen)
 
@@ -21,8 +20,6 @@ def ReceiveData(conn, safe=True, compression=False):
         chunk = conn.recv(buffer)
         data += chunk
         conn.send(b'\x00')
-    if compression:
-        data = zlib.decompress(data)
     return encrypt.decrypt(data, seed)
 
 def RecieveString(conn):
@@ -30,8 +27,8 @@ def RecieveString(conn):
     print('(string)%s' % string)
 
 def RecieveFile(conn):
-    filenamebuffer = encrypt.BytesDecode(caps.Strip(conn.recv(3)))
-    filename = encrypt.BytesDecode(conn.recv(int(filenamebuffer)))
+    filenamebuffer = encrypt.uncharcoal(conn.recv(1))
+    filename = encrypt.BytesDecode(conn.recv(filenamebuffer))
 
     filename = os.path.basename(filename)
 
