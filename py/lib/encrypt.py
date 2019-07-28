@@ -7,8 +7,6 @@ def _binaryToDecimal(n):
 def _decimalToBinary(n, bitnum=8):
     return caps.ZeroFill(bin(n).replace("0b",""), bitnum)
 
-#encrypted.append(chr((ord(c) + random.randrange(256)) % 256))
-#256 max
 def BytesEncode(string):
     encoded = b''
     for c in string:
