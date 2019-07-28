@@ -3,39 +3,39 @@ import caps
 import os
 import random
 import encrypt
+import gzip
+import zlib
 
-def ReceiveData(conn, datatype=bytes):
-    #recieve seed
-    chared = conn.recv(6).decode()
-    seed = encrypt.uncharcoal(chared)
+#compression is broken
+def ReceiveData(conn, safe=True, compression=False):
+    charredSeed = conn.recv(3)
+    seed = encrypt.uncharcoal(charredSeed)
 
-    #recieve base array size and end array buffer size
-    baselen = int(conn.recv(7).decode().strip())
-    endlen  = int(conn.recv(3).decode().strip())
+    basebufferlen = int(encrypt.BytesDecode(caps.Strip(conn.recv(10))))
+    endbufferlen = int(encrypt.BytesDecode(caps.Strip(conn.recv(4))))
+    buffers = [1000 for _ in range(basebufferlen)]
+    buffers.append(endbufferlen)
 
-    #recieve all the data!!!
-    data = []
-    for i in range(baselen):
-        chunk = conn.recv(1000)
-        data.append(encrypt.decrypt(chunk, seed, datatype))
-        conn.send(b'$')
-    chunk = conn.recv(endlen)
-    data.append(encrypt.decrypt(chunk, seed, datatype))
-    conn.send(b'$')
-    return ''.join(data)
+    data = b''
+    for buffer in buffers:
+        chunk = conn.recv(buffer)
+        data += chunk
+        conn.send(b'\x00')
+    if compression:
+        data = zlib.decompress(data)
+    return encrypt.decrypt(data, seed)
 
 def RecieveString(conn):
-    string = ReceiveData(conn, str)
-    print('(string)', string)
+    string = encrypt.BytesDecode(ReceiveData(conn))
+    print('(string)%s' % string)
 
-def RecieveFile(conn, keep=False, loc=''):
-    #recieve filename buffer and filename
-    filename_buffer = int(conn.recv(2).decode().strip())
-    filename = conn.recv(filename_buffer).decode()
+def RecieveFile(conn):
+    filenamebuffer = encrypt.BytesDecode(caps.Strip(conn.recv(3)))
+    filename = encrypt.BytesDecode(conn.recv(int(filenamebuffer)))
 
-    #get contents and write it to file
-    contents = ReceiveData(conn)
-    with open(filename, "wb") as file:
-        for chunk in contents:
-            file.write(chunk)
-    print("received %s with size of %s bytes" % (filename, len(contents)))
+    filename = os.path.basename(filename)
+
+    data = ReceiveData(conn)
+    with open(filename, 'wb') as file:
+        file.write(data)
+    print("recieved %s with size of %s" % (filename, len(data)))

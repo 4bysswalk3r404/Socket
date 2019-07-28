@@ -22,8 +22,10 @@ conn, addr = server.accept()
 print("connected to ", addr)
 
 while 1:
-    data = conn.recv(1)
-    if data == b'\x01':
+    data = conn.recv(4).decode()
+    if data == '(&s)':
         RecieveString(conn)
-    elif data == b'\x02':
+    elif data == '(&f)':
         RecieveFile(conn)
+    elif data == '(&F)':
+        ReceiveFileUnprotected(conn)

@@ -3,47 +3,54 @@ import caps
 import os
 import random
 import encrypt
+import gzip
+import zlib
 
-def SendData(client, data, datatype=bytes):
-    #get seed, char it, send it
+#compression is broken
+def SendData(client, data, safe=True, compression=False):
+    #get random seed, charcoal it, send it
     seed = random.randrange(16777216)
-    chared = encrypt.charcoal(seed)
-    client.send(chared.encode())
+    charredSeed = encrypt.charcoal(seed, 3)
+    client.send(charredSeed)
 
     #encrypt data and Vectorize it
-    encrypted = encrypt.encrypt(data, seed, datatype)
-    encryptedvec = caps.Vectorize(encrypted)
+    encrypted = encrypt.encrypt(data, seed)
+    if compression:
+        encrypted = zlib.compress(encrypted)
+    encryptedVec = caps.Vectorize(encrypted)
 
-    #send array size - 1 and buffer size of last element
-    client.send(caps.Fill(len(encryptedvec)-1, 7).encode())
-    client.send(caps.Fill(len(encryptedvec[-1]), 3).encode())
+    #get base length of buffer array
+    basebufferlen = len(encryptedVec) - 1
+    basebufferlen = caps.Fill(encrypt.BytesEncode(str(basebufferlen)), 10)
 
-    #send all the data!!!
-    for chunk in encryptedvec:
+    #get buffer length of last element
+    endbufferlen = len(encryptedVec[-1])
+    endbufferlen = caps.Fill(encrypt.BytesEncode(str(endbufferlen)), 4)
+
+    #send basebufferlen and endbufferlen
+    client.send(basebufferlen)
+    client.send(endbufferlen)
+
+    for chunk in encryptedVec:
         client.send(chunk)
         pause = client.recv(1)
-        if pause != b'$':
-            print("error: ", pause)
+        if pause != b'\x00':
+            print('error')
 
 def SendString(client, string):
-    client.send(b'(&s)')
-    SendData(client, string, str)
+    client.send(b'\x01')
+    SendData(client, encrypt.BytesEncode(string))
 
 def SendFile(client, filename):
-    #make sure file exists
     if not os.path.exists(filename):
         print(FileExistsError)
         return
+    client.send(b'\x02')
 
-    #send initializing file send/recieve code
-    client.send(b"(&f)")
+    filenamebuffer = encrypt.BytesEncode(str(len(filename)))
+    client.send(caps.Fill(filenamebuffer, 3))
+    client.send(encrypt.BytesEncode(filename))
 
-    #send filename buffer and filename
-    client.send(caps.Fill(len(filename), 2).encode())
-    client.send(filename.encode())
-
-    #read file in binary format and give it to SendData
-    contents = open(filename, "rb").read()
-    SendData(client, contents)
-
-    print("sent %s with a size of %s bytes" % (filename, len(contents)))
+    data = open(filename, 'rb').read()
+    SendData(client, data)
+    print("sent %s with size of %s bytes" % (filename, len(data)))
