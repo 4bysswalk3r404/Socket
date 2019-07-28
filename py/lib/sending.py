@@ -12,7 +12,7 @@ def _SendDataSmall(client, data):
     client.send(databuffer)
     client.send(encrypt.encrypt(data, seed))
 
-def SendData(client, data, safe=True):
+def SendData(client, data):
     #get random seed, charcoal it, send it
     seed = random.randrange(16777216)
     charredSeed = encrypt.charcoal(seed, 3)
@@ -53,5 +53,5 @@ def SendFile(client, filename):
     _SendDataSmall(client, filename)
 
     data = open(filename, 'rb').read()
-    SendData(client, data)
+    SendData(client, encrypt.BytesEncode(data))
     print("sent %s with size of %s bytes" % (filename, len(data)))
