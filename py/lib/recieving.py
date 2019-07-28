@@ -5,8 +5,7 @@ import random
 import encrypt
 
 def _RecieveDataSmall(conn):
-    charredSeed = conn.recv(3)
-    seed = encrypt.uncharcoal(charredSeed)
+    seed = encrypt.uncharcoal(conn.recv(3))
     databuffer = encrypt.uncharcoal(conn.recv(1))
     data = encrypt.decrypt(conn.recv(databuffer), seed)
     return data

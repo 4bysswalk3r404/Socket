@@ -50,7 +50,7 @@ def SendFile(client, filename):
         return
     client.send(b'\x02')
 
-    _SendDataSmall(client, filename)
+    _SendDataSmall(client, encrypted.BytesEncode(filename))
 
     data = open(filename, 'rb').read()
     SendData(client, encrypt.BytesEncode(data))
