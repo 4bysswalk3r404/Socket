@@ -9,8 +9,9 @@ def _RecieveDataSmall(conn):
     seed = encrypt.uncharcoal(charredSeed)
     databuffer = encrypt.uncharcoal(conn.recv(1))
     data = encrypt.decrypt(conn.recv(databuffer), seed)
+    return data
 
-def ReceiveData(conn, safe=True):
+def ReceiveData(conn):
     charredSeed = conn.recv(3)
     seed = encrypt.uncharcoal(charredSeed)
 
@@ -33,7 +34,7 @@ def RecieveString(conn):
     print('(string)%s' % string)
 
 def RecieveFile(conn):
-    filename = _RecieveDataSmall(conn)
+    filename = encrypt.BytesDecode(_RecieveDataSmall(conn))
     filename = os.path.basename(filename)
 
     data = ReceiveData(conn)
