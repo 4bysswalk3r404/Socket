@@ -9,9 +9,9 @@ def _decimalToBinary(n, bitnum=8):
 
 #encrypted.append(chr((ord(c) + random.randrange(256)) % 256))
 #256 max
-def BytesEncode(data):
+def BytesEncode(string):
     encoded = b''
-    for c in data:
+    for c in string:
         encoded += bytes([ord(c)])
     return encoded
 
@@ -25,14 +25,14 @@ def encrypt(data, seed):
     random.seed(seed)
     encrypted = b''
     for b in data:
-        encrypted += chr((ord(b) + random.randrange(256)) % 256)
+        encrypted += bytes([(b + random.randrange(256)) % 256])
     return encrypted
 
 def decrypt(data, seed):
     random.seed(seed)
     decrypted = b''
     for b in data:
-        decrypted += chr((ord(b) - random.randrange(256)) % 256)
+        decrypted += bytes([(b - random.randrange(256)) % 256])
     return decrypted
 
 def charcoal(num, bytelen=3):

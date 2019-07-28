@@ -1,7 +1,7 @@
 import sys
 
 def Fill(data, buffsize=32):
-    return data + (b'\xff' * (buffsize - len(data)))
+    return data + (b'\x00' * (buffsize - len(data)))
 
 def ZeroFill(string, buffsize):
     return ('0' * (buffsize - len(string))) + string
