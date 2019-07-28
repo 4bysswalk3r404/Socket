@@ -23,6 +23,8 @@ def SendData(client, data, safe=True):
     charredEBL = encrypt.charcoal(endbufferlen, 2)
 
     #send basebufferlen and endbufferlen
+    print("charredBBL:", charredBBL)
+    print("charredEBL:",charredEBL)
     client.send(charredBBL)
     client.send(charredEBL)
 
