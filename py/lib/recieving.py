@@ -3,6 +3,7 @@ import caps
 import os
 import random
 import encrypt
+import zlib
 
 def _RecieveDataSmall(conn):
     seed = encrypt.uncharcoal(conn.recv(3))
@@ -10,7 +11,7 @@ def _RecieveDataSmall(conn):
     data = encrypt.decrypt(conn.recv(databuffer), seed)
     return data
 
-def ReceiveData(conn):
+def ReceiveData(conn, compress=False):
     charredSeed = conn.recv(3)
     seed = encrypt.uncharcoal(charredSeed)
 
@@ -26,7 +27,7 @@ def ReceiveData(conn):
         chunk = conn.recv(buffer)
         data += chunk
         conn.send(b'\x00')
-    return encrypt.decrypt(data, seed)
+    return zlib.decompress(encrypt.decrypt(data, seed))
 
 def RecieveString(conn):
     string = encrypt.BytesDecode(ReceiveData(conn))

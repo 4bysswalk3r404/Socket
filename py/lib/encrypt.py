@@ -8,30 +8,18 @@ def _decimalToBinary(n, bitnum=8):
     return caps.ZeroFill(bin(n).replace("0b",""), bitnum)
 
 def BytesEncode(string):
-    encoded = b''
-    for c in string:
-        encoded += bytes([ord(c)])
-    return encoded
+    return bytes([ord(c) for c in string])
 
 def BytesDecode(data):
-    decoded = ''
-    for b in data:
-        decoded += chr(b)
-    return decoded
+    return ''.join([chr(b) for b in data])
 
 def encrypt(data, seed):
     random.seed(seed)
-    encrypted = b''
-    for b in data:
-        encrypted += bytes([(b + random.randrange(256)) % 256])
-    return encrypted
+    return bytes([(b + random.randrange(256)) % 256 for b in data])
 
 def decrypt(data, seed):
     random.seed(seed)
-    decrypted = b''
-    for b in data:
-        decrypted += bytes([(b - random.randrange(256)) % 256])
-    return decrypted
+    return bytes([(b - random.randrange(256)) % 256 for b in data])
 
 def charcoal(num, bytelen=3):
     binary = caps.ZeroFill(_decimalToBinary(num), bytelen*8)

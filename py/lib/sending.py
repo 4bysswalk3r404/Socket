@@ -3,6 +3,7 @@ import caps
 import os
 import random
 import encrypt
+import zlib
 
 def _SendDataSmall(client, data):
     seed = random.randrange(16777216)
@@ -12,11 +13,14 @@ def _SendDataSmall(client, data):
     client.send(databuffer)
     client.send(encrypt.encrypt(data, seed))
 
-def SendData(client, data):
+def SendData(client, data, compress=False):
     #get random seed, charcoal it, send it
     seed = random.randrange(16777216)
     charredSeed = encrypt.charcoal(seed, 3)
     client.send(charredSeed)
+
+    if compress:
+        data = zlib.compress(data)
 
     #encrypt data and Vectorize it
     encrypted = encrypt.encrypt(data, seed)
