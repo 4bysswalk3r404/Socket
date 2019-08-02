@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "../lib/strlib.h"
 #define PORT 3705
 
 int main(int argc, char const *argv[])
@@ -57,13 +58,27 @@ int main(int argc, char const *argv[])
     }
 
     int valread;
-    char* protocol = "string";
+    unsigned char lowProtocol;
     char InBuffer[1024] = {0};
+
+    read(new_socket, InBuffer, 18);
+    printf("%s\n", InBuffer);
+
     while (1)
     {
-        valread = read(new_socket, InBuffer, 1024);
-        printf("(%s)", protocol);
-        printf("%s\n", InBuffer);
+        if (!(read(new_socket, &lowProtocol, 1))) {
+            printf("Connection broken 1\n");
+            exit(EXIT_FAILURE);
+        }
+        if (!(read(new_socket, InBuffer, 1024))) {
+            printf("Connection broken 2\n");
+            exit(EXIT_FAILURE);
+        }
+        if (lowProtocol == '\1') {
+            printf("(string)%s\n", InBuffer);
+        } else if (lowProtocol == '\2') {
+            printf("(file)%s\n", InBuffer);
+        }
         memset(InBuffer, 0, sizeof(InBuffer));
     }
 

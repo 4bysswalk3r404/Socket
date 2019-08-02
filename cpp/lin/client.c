@@ -5,40 +5,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <string.h>
+#include "../lib/strlib.h"
 #define PORT 3705
-
-void Input(char* buffer)
-{
-    char c;
-    void* BufferStart = buffer;
-    while(c = getchar())
-    {
-        if ((c == '\n') || (c == '\0')) {
-            *buffer = '\0';
-            break;
-        } else {
-            *buffer = c;
-            buffer++;
-        }
-    }
-    buffer = BufferStart;
-}
-
-void ProtoChange(char* buffer, char* protocol)
-{
-    if ((buffer[0] == 'u') && (buffer[1] == 's') && (buffer[2] == 'e'))
-    {
-        if (buffer[4] == 's' && buffer[5] == 't' && buffer[6] == 't' && buffer[7] == 'r' && buffer[8] == 'i' && buffer[9] == 'n' && buffer[10] == 'g')
-            protocol = "string";
-        else if (buffer[4] == 'f' && buffer[5] == 'i' && buffer[6] == 'l' && buffer[7] == 'e')
-            protocol = "file";
-    }
-}
 
 int main(int argc, char const *argv[])
 {
-    int sock = 0, valread;
+    int sock = 0;
     struct sockaddr_in serv_addr;
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
@@ -62,10 +34,13 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    char* protocol = "string";
+    char* protocol = (char*)malloc(sizeof(char) * 10);
+    SetStr(protocol, "string");
 
     char* Sending = (char*)malloc(sizeof(char) * 1024);
     void* SendingStart = Sending;
+
+    send(sock, argv[1], 18, 0);
 
     while (1)
     {
@@ -73,9 +48,25 @@ int main(int argc, char const *argv[])
 
         Input(Sending);
         Sending = SendingStart;
-        ProtoChange(Sending, protocol);
 
-        send(sock, Sending, strlen(Sending), 0);
+        if (SameStr(Sending, "use", 3))
+        {
+            Sending = SendingStart + 4;
+            if (SameStr(Sending, "string", 6)) {
+                SetStr(protocol, "string");
+            } else if (SameStr(Sending, "file", 4)) {
+                SetStr(protocol, "file");
+            }
+        }
+        Sending = SendingStart;
+
+        if (SameStr(protocol, "string", 6)) {
+            send(sock, "\1", 1, 0);
+            send(sock, Sending, strlen(Sending), 0);
+        } else if (SameStr(protocol, "file", 4)) {
+            send(sock, "\2", 1, 0);
+            send(sock, Sending, strlen(Sending), 0);
+        }
         memset(Sending, 0, sizeof(Sending));
     }
     return 0;
