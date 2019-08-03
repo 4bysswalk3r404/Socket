@@ -27,7 +27,12 @@ def ReceiveData(conn, compress=False):
         chunk = conn.recv(buffer)
         data += chunk
         conn.send(b'\x00')
-    return zlib.decompress(encrypt.decrypt(data, seed))
+
+    decrypted = encrypt.decrypt(data, seed)
+    if compress:
+        return zlib.decompress(decrypted)
+    else:
+        return decrypted
 
 def RecieveString(conn):
     string = encrypt.BytesDecode(ReceiveData(conn))
@@ -37,7 +42,7 @@ def RecieveFile(conn):
     filename = encrypt.BytesDecode(_RecieveDataSmall(conn))
     filename = os.path.basename(filename)
 
-    data = ReceiveData(conn)
+    data = ReceiveData(conn, True)
     with open(filename, 'wb') as file:
         file.write(data)
     print("recieved %s with size of %s" % (filename, len(data)))

@@ -44,18 +44,19 @@ def SendData(client, data, compress=False):
         if pause != b'\x00':
             print('error')
 
-def SendString(client, string):
+def SendString(client, addr, string):
     client.send(b'\x01')
+    client.send(caps.Fill(encrypt.BytesEncode(addr), 18))
     SendData(client, encrypt.BytesEncode(string))
 
-def SendFile(client, filename):
+def SendFile(client, addr, filename):
     if not os.path.exists(filename):
         print(FileExistsError)
         return
     client.send(b'\x02')
 
+    client.send(caps.Fill(encrypt.BytesEncode(addr), 18))
     _SendDataSmall(client, encrypt.BytesEncode(filename))
 
     data = open(filename, 'rb').read()
-    SendData(client, data)
-    print("sent %s with size of %s bytes" % (filename, len(data)))
+    SendData(client, data, True)
