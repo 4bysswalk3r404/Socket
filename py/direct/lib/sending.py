@@ -59,3 +59,15 @@ def SendFile(client, filename):
     data = open(filename, 'rb').read()
     SendData(client, data, True)
     print("sent %s with size of %s bytes" % (filename, len(data)))
+
+def SendTree(client, treename):
+    files = [path for sub in [[os.path.join(w[0], file) for file in w[2]] for w in os.walk(dir)] for path in sub]
+    folders = [path[0] for path in os.walk('.')]
+    for folder in folders:
+        SendFolder(client, folder)
+    for file in file:
+        SendFile(client, file)
+
+def SendFolder(client, foldername):
+    client.send(b'\x03')
+    _SendDataSmall(client, encrypt.BytesEncode(foldername))

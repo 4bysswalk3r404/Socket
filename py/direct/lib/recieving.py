@@ -46,3 +46,8 @@ def RecieveFile(conn):
     with open(filename, 'wb') as file:
         file.write(data)
     print("recieved %s with size of %s" % (filename, len(data)))
+
+def RecieveFolder(conn):
+    foldername = _RecieveDataSmall(conn)
+    if not os.path.exists(foldername):
+        os.makedirs(foldername)

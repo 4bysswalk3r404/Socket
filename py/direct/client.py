@@ -7,10 +7,10 @@ import caps
 from sending import *
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-if sys.platform == 'win32':
-    HOST = socket.gethostbyname(socket.gethostname())
-else:
-    HOST = input("Server ip: ")
+#if sys.platform == 'win32':
+#    HOST = socket.gethostbyname(socket.gethostname())
+#else:
+HOST = input("Server ip: ")
 PORT = 3702
 client.connect((HOST, PORT))
 
@@ -23,8 +23,12 @@ while 1:
             protocol = 'string'
         elif command[1] == 'file':
             protocol = 'file'
+        elif command[1] == 'tree' or command[1] == 'dir':
+            protocol = 'tree'
     else:
         if protocol == 'string':
             SendString(client, data)
         elif protocol == 'file':
             SendFile(client, data)
+        elif protocol == 'tree':
+            SendTree(client, data)
