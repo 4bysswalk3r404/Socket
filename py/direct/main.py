@@ -18,9 +18,8 @@ class Server:
         self.sock.listen(1)
         self.conn, self.connInfo = self.sock.accept()
         print("Server connected", self.connInfo)
-
-    def listen(self):
-        print(self.conn.recv(2048).decod())
+        while 1:
+            print(self.sock.recv(2048).decode())
 
 class Client:
     def __init__(self, ThatIp):
@@ -29,10 +28,15 @@ class Client:
     def __call__(self):
         self.sock.connect((ThatIp, PORT))
         print("Client connected")
-
-    def dispute(self):
-        self.sock.send(input(">>>").encode())
+        while 1:
+            self.sock.send(input(">>>").encode())
 
 if __name__ == "__main__":
     ThisIp = input("Your ip: ")
     ThatIp = input("Other ip: ")
+
+    server = Server(ThisIp)
+    client = Client(ThatIp)
+
+    threading.Thread(target=server)
+    threading.Thread(target=client)
