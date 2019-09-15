@@ -1,20 +1,24 @@
 import sys
+import caps
 import os
 import random
 import encrypt
 import zlib
 
 def _RecieveDataSmall(conn):
-    seed = int.from_bytes(conn.recv(3), 'big')
-    databuffer = int.from_bytes(conn.recv(1), 'big')
+    seed = encrypt.uncharcoal(conn.recv(3))
+    databuffer = encrypt.uncharcoal(conn.recv(1))
     data = encrypt.decrypt(conn.recv(databuffer), seed)
     return data
 
 def ReceiveData(conn, compress=False):
-    seed = int.from_bytes(conn.recv(3), 'big')
+    charredSeed = conn.recv(3)
+    seed = encrypt.uncharcoal(charredSeed)
 
-    basebufferlen = int.from_bytes(conn.recv(4), 'big')
-    endbufferlen = int.from_bytes(conn.recv(2), 'big')
+    charredBBL = conn.recv(4)
+    charredEBL = conn.recv(2)
+    basebufferlen = encrypt.uncharcoal(charredBBL)
+    endbufferlen = encrypt.uncharcoal(charredEBL)
     buffers = [1000 for _ in range(basebufferlen)]
     buffers.append(endbufferlen)
 

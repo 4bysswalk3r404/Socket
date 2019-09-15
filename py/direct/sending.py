@@ -1,18 +1,23 @@
 import sys
+import caps
 import os
 import random
 import encrypt
 import zlib
 
 def _SendDataSmall(client, data):
-    client.send(random.getrandbits(8*4).to_bytes(4, 'big'))
-    client.send(len(data).to_bytes(1, 'big'))
+    seed = random.randrange(16777216)
+    charredSeed = encrypt.charcoal(seed, 3)
+    databuffer = encrypt.charcoal(len(data), 1)
+    client.send(charredSeed)
+    client.send(databuffer)
     client.send(encrypt.encrypt(data, seed))
 
 def SendData(client, data, compress=False):
     #get random seed, charcoal it, send it
-    seed = random.getrandbits(8*4)
-    client.send(seed.to_bytes(4, 'big'))
+    seed = random.randrange(16777216)
+    charredSeed = encrypt.charcoal(seed, 3)
+    client.send(charredSeed)
 
     if compress:
         data = zlib.compress(data)
@@ -21,9 +26,17 @@ def SendData(client, data, compress=False):
     encrypted = encrypt.encrypt(data, seed)
     encryptedVec = caps.Vectorize(encrypted)
 
+    #get base length of buffer array
+    basebufferlen = len(encryptedVec) - 1
+    charredBBL = encrypt.charcoal(basebufferlen, 4)
+
+    #get buffer length of last element
+    endbufferlen = len(encryptedVec[-1])
+    charredEBL = encrypt.charcoal(endbufferlen, 2)
+
     #send basebufferlen and endbufferlen
-    client.send(len(basebufferlen).to_bytes(4, 'big'))
-    client.send(len(endbufferlen).to_bytes(2, 'big'))
+    client.send(charredBBL)
+    client.send(charredEBL)
 
     for chunk in encryptedVec:
         client.send(chunk)

@@ -27,3 +27,4 @@ while 1:
         RecieveString(conn)
     elif data == b'\x02':
         RecieveFile(conn)
+    elif data == b'\x03'
